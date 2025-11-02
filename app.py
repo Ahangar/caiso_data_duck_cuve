@@ -1,6 +1,3 @@
-!pip install pycaiso
-!pip install dash
-
 from pycaiso.oasis import Node
 from datetime import datetime
 import pandas as pd
