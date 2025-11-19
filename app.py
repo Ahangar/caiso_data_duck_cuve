@@ -100,8 +100,6 @@ st.subheader("Historical Changes in the Duck Curve (Demand Curve)")
 st.plotly_chart(fig1, use_container_width=True)
 
 
-st.plotly_chart(fig1, use_container_width=True)
-
 
 
 
