@@ -35,23 +35,10 @@ combined_df['Hour'] = combined_df['Datetime'].dt.hour
 combined_df['Time'] = combined_df['Datetime'].dt.time
 
 
-# Define seasons
-def get_season(month):
-    if month in [12, 1, 2]:
-        return 'Winter'
-    elif month in [3, 4, 5]:
-        return 'Spring'
-    elif month in [6, 7, 8]:
-        return 'Summer'
-    else:
-        return 'Fall'
-
-combined_df['Season'] = combined_df['Month'].apply(get_season)
 
 # Group by Hour and compute average demand for each grouping
 monthly_avg = combined_df.groupby(['Month', 'Time'])['Current demand'].mean().reset_index()
 yearly_avg = combined_df.groupby(['Year', 'Time'])['Current demand'].mean().reset_index()
-yearly_seasonal_avg = combined_df.groupby(['Year','Season', 'Time'])['Current demand'].mean().reset_index()
 yearly_month_avg = combined_df.groupby(['Year','Month', 'Time'])['Current demand'].mean().reset_index()
 
 
@@ -87,9 +74,11 @@ fig1 = px.line(
     x="Time",
     y="Current demand",
     color="Year",
+    color_discrete_sequence=px.colors.sequential.algae,
     markers=False,
     title=f"Demand vs Time : {month_names[int(month_choice_num)]}",
 )
+
 fig1.update_layout(xaxis_title="Time", yaxis_title="Demand", legend_title="Year")
 fig1.update_xaxes(type="category", tickangle=-45)
 
@@ -98,12 +87,3 @@ fig1.update_xaxes(type="category", tickangle=-45)
 # --- Layout ---
 st.subheader("Historical Changes in the Duck Curve (Demand Curve)")
 st.plotly_chart(fig1, use_container_width=True)
-
-
-
-
-
-
-
-
-
