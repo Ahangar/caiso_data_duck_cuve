@@ -115,6 +115,10 @@ fig2.update_xaxes(type="category", tickangle=-90)
 # --- Layout ---
 
 st.subheader("Plot 1")
+st.plotly_chart(fig1, use_container_width=True)
 st.subheader("Plot 2")
+st.plotly_chart(fig2, use_container_width=True)
+
+
 
 
