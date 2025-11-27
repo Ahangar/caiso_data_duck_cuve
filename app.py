@@ -23,6 +23,7 @@ warnings.filterwarnings("ignore")
 # Import downloaded files
 netdemand = pd.read_csv('netdemand_2019_2025.csv')
 fuelsource = pd.read_csv('fuelsource_2019_2025.csv')
+fuelsource.loc[fuelsource['Natural Gas']>0,'Natural gas'] = fuelsource.loc[fuelsource['Natural Gas']>0,'Natural Gas']
 
 
 netdemand['Datetime'] = pd.to_datetime(netdemand['Date'].astype(str) + ' ' + netdemand['Time'], format='%Y-%m-%d %H:%M')
@@ -122,6 +123,7 @@ fig2.update_xaxes(type="category", tickangle=-90)
 
 #st.subheader("Plot 1")
 st.plotly_chart(fig2, use_container_width=True)
+
 
 
 
