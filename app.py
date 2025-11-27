@@ -95,7 +95,7 @@ fig1 = px.line(
     color_discrete_sequence=px.colors.sequential.algae,
     title=f"Net Demand vs Time — {month_names[int(month_choice_num)]}",
 )
-fig1.update_layout(xaxis_title="Time of Day", yaxis_title="Net Demand", legend_title="Year")
+fig1.update_layout(xaxis_title="Time of Day", yaxis_title="MW", legend_title="Year")
 fig1.update_xaxes(type="category", tickangle=-90)
 
 
@@ -114,14 +114,15 @@ fig2 = px.line(
     color="Year",
     markers=False,
     color_discrete_sequence=px.colors.sequential.Burg,
-    title=f"Solar vs Time — {month_names[int(month_choice_num)]}",
+    title=f"Solar-Wind vs Time — {month_names[int(month_choice_num)]}",
 )
-fig2.update_layout(xaxis_title="Time of Day", yaxis_title="Solar", legend_title="Year")
+fig2.update_layout(xaxis_title="Time of Day", yaxis_title="MW", legend_title="Year")
 fig2.update_xaxes(type="category", tickangle=-90)
 
 
 #st.subheader("Plot 1")
 st.plotly_chart(fig2, use_container_width=True)
+
 
 
 
