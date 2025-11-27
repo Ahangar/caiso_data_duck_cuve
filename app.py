@@ -7,6 +7,7 @@ import time
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
 # select pnode
+import plotly.graph_objects as go
 
 import dash
 from dash import dcc, html, Input, Output
@@ -117,16 +118,27 @@ fig2 = px.line(
     color_discrete_sequence=px.colors.sequential.Burg,
     title=f"Solar-Wind vs Time — {month_names[int(month_choice_num)]}",
 )
-import plotly.graph_objects as go
-# add Natural Gas trace
+
+# Extract the color assigned to each Year
+year_to_color = {}
+for trace in fig2.data:
+    if trace.name.isdigit():       # Year labels
+        year_to_color[int(trace.name)] = trace.line.color
+
+# --- Add Natural Gas (dashed lines, same color per Year) ---
 for year in f2["Year"].unique():
     df_year = f2[f2["Year"] == year]
+
     fig2.add_trace(
-        go.Line(
+        go.Scatter(
             x=df_year["Time"],
             y=df_year["Natural gas"],
+            mode="lines",
             name=f"Natural gas — {year}",
-            mode="lines"
+            line=dict(
+                color=year_to_color[year],   # same color as Solar_Wind
+                dash="dash"                  # dashed line style
+            ),
         )
     )
     
@@ -137,6 +149,7 @@ fig2.update_xaxes(type="category", tickangle=-90)
 
 #st.subheader("Plot 1")
 st.plotly_chart(fig2, use_container_width=True)
+
 
 
 
