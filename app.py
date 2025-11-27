@@ -26,7 +26,7 @@ fuelsource = pd.read_csv('fuelsource_2019_2025.csv')
 
 
 netdemand['Datetime'] = pd.to_datetime(netdemand['Date'].astype(str) + ' ' + netdemand['Time'], format='%Y-%m-%d %H:%M')
-fuelsource['Datetime'] = pd.to_datetime(fuelsource['Date'].astype(str) + ' ' + fuelsource['Time'], format='%d/%m/%Y %H:%M')
+fuelsource['Datetime'] = pd.to_datetime(fuelsource['Date'].astype(str) + ' ' + fuelsource['Time'], format='%m/%d/%Y %H:%M')
 
 # Extract additional time features
 def extract_time_features(df):
@@ -120,6 +120,7 @@ fig2.update_xaxes(type="category", tickangle=-90)
 
 #st.subheader("Plot 1")
 st.plotly_chart(fig2, use_container_width=True)
+
 
 
 
