@@ -64,7 +64,9 @@ netdemand['Day'] = netdemand['Datetime'].apply(lambda x: f"{x.strftime('%B')} {a
 
 #yearly_avg = netdemand.groupby(['Year', 'Time'])['Net demand'].mean().reset_index()
 netdemand_yearly_monthly = netdemand.groupby(['Year','Month', 'Time'])['Net demand'].mean().reset_index()
-fuelsource_yearly_monthly = fuelsource.groupby(['Year','Month', 'Time'])['Solar'].mean().reset_index()
+fuelsource_yearly_monthly = fuelsource.groupby(['Year','Month', 'Time'])[['Solar','Wind']].mean().reset_index()
+fuelsource_yearly_monthly['Solar_Wind'] = fuelsource_yearly_monthly['Solar'] + fuelsource_yearly_monthly['Wind']
+
 
 
 # --- Controls ---
@@ -108,7 +110,7 @@ f2 = f2.sort_values(["Time", "Year"])
 fig2 = px.line(
     f2,
     x="Time",
-    y="Solar",
+    y="Solar_Wind",
     color="Year",
     markers=False,
     color_discrete_sequence=px.colors.sequential.algae,
@@ -120,6 +122,7 @@ fig2.update_xaxes(type="category", tickangle=-90)
 
 #st.subheader("Plot 1")
 st.plotly_chart(fig2, use_container_width=True)
+
 
 
 
