@@ -52,13 +52,12 @@ yearly_avg = combined_df.groupby(['Year', 'Time'])['Net demand'].mean().reset_in
 yearly_monthly_avg = combined_df.groupby(['Year','Month', 'Time'])['Net demand'].mean().reset_index()
 
 # --- Controls ---
-st.sidebar.header("Filters")
 available_months = [m for m in yearly_monthly_avg["Month"].dropna().unique()]
 available_months = sorted([int(m) for m in available_months])
 month_names = {i: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][i-1] for i in range(1,13)}
 
 
-month_choice_num = st.sidebar.selectbox(
+month_choice_num = st.selectbox(
     "Select Month (for Plot 1)",
     options=available_months,
     format_func=lambda x: f"{month_names[int(x)]} ({int(x)})"
@@ -82,15 +81,17 @@ fig1.update_layout(xaxis_title="Time of Day", yaxis_title="Net Demand", legend_t
 fig1.update_xaxes(type="category", tickangle=-90)
 
 
+#st.subheader("Plot 1")
+st.plotly_chart(fig1, use_container_width=True)
+
 #--- Plot 2: Value vs Time for a chosen day, colored by Year ---
 # --- Controls ---
-st.sidebar.header("Filters")
 available_days = [m for m in combined_df["Day"].dropna().unique()]
 #available_days = sorted([(m) for m in available_days])
 #month_names = {i: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][i-1] for i in range(1,13)}
 
 
-day_choice_num = st.sidebar.selectbox(
+day_choice_num = st.selectbox(
     "Select Day (for Plot 2)",
     options=available_days#,
     #format_func=lambda x: f"({int(x)})"
@@ -114,9 +115,8 @@ fig2.update_xaxes(type="category", tickangle=-90)
 
 # --- Layout ---
 
-st.subheader("Plot 1")
-st.plotly_chart(fig1, use_container_width=True)
-st.subheader("Plot 2")
+
+#st.subheader("Plot 2")
 st.plotly_chart(fig2, use_container_width=True)
 
 
