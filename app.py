@@ -1,53 +1,88 @@
-#from pycaiso.oasis import Node
 from datetime import datetime
 import pandas as pd
-from typing import List, Dict, TypeVar, Union, Optional, Any
-#from pycaiso.oasis import Atlas, BadDateRangeError, Node, Oasis, SystemDemand, get_lmps
 import time
 from datetime import datetime, timedelta
 import matplotlib.pyplot as plt
-# select pnode
-import plotly.graph_objects as go
-
-import dash
-from dash import dcc, html, Input, Output
 import pandas as pd
 import plotly.express as px
 
 import streamlit as st
 
 import warnings
-
 # Ignore all warnings
 warnings.filterwarnings("ignore")
 
-# Import downloaded files
-netdemand = pd.read_csv('netdemand_2019_2025.csv')
-fuelsource = pd.read_csv('fuelsource_2019_2025.csv')
-fuelsource.loc[fuelsource['Natural Gas']>0,'Natural gas'] = fuelsource.loc[fuelsource['Natural Gas']>0,'Natural Gas']
+
+# # 1- Download Data
+# Downloading Historical Data for Net Demand and Fuel Sources.
+
+# In[2]:
 
 
-netdemand['Datetime'] = pd.to_datetime(netdemand['Date'].astype(str) + ' ' + netdemand['Time'], format='%Y-%m-%d %H:%M')
-fuelsource['Datetime'] = pd.to_datetime(fuelsource['Date'].astype(str) + ' ' + fuelsource['Time'], format='%m/%d/%Y %H:%M')
-
-# Extract additional time features
-def extract_time_features(df):
+def download_caiso_data(start_date, end_date, target='netdemand'):
+    #target options are: demand, netdemand, fuelsource
     
-    df['Year'] =df['Datetime'].dt.year
-    df['Month'] = df['Datetime'].dt.month
-    df['Hour'] = df['Datetime'].dt.hour
-    df['Time'] = df['Datetime'].dt.time
+    dataframes = []
+
+    current_date = start_date
+    while current_date <= end_date:
+        date_str = current_date.strftime('%Y%m%d')
+        url = f'https://www.caiso.com/outlook/history/{date_str}/{target}.csv'
+        try:
+            df = pd.read_csv(url)[:-1]
+            df['Date'] = current_date
+            dataframes.append(df)
+        except Exception as e:
+            print(f"Failed to load data for {date_str}: {e}")
+        current_date += timedelta(days=1)
+
+    if dataframes:
+        combined_df = pd.concat(dataframes, ignore_index=True)
+        return combined_df
+    else:
+        print("No data was loaded.")
+        return pd.DataFrame()
 
 
-extract_time_features(netdemand)
-extract_time_features(fuelsource)
+# In[4]:
 
 
-#netdemand['Year'] =netdemand['Datetime'].dt.year
-#netdemand['Month'] = netdemand['Datetime'].dt.month
-#netdemand['Day of Year'] = netdemand['Datetime'].dt.dayofyear
-#netdemand['Hour'] = netdemand['Datetime'].dt.hour
-#netdemand['Time'] = netdemand['Datetime'].dt.time
+#download net demand data
+start_date = datetime(2019, 1, 1)
+end_date = datetime(2025, 11, 1)
+
+
+# # Download the netdemand data
+# netdemand = download_caiso_data(start_date, end_date, target='netdemand')
+# netdemand[['Time','Current demand','Net demand','Date']].to_csv('netdemand_2019_2025.csv', index = False)
+# 
+
+# # Download fuelsource data
+# fuelsource = download_caiso_data(start_date, end_date, target='fuelsource')
+# 
+# # Combining Large Hydro and Natural Gas columns into one
+# fuelsource.loc[fuelsource['Natural gas'].isna(),
+#                'Natural gas']  = fuelsource.loc[fuelsource['Natural gas'].isna(),'Natural Gas']
+# 
+# 
+# fuelsource.loc[fuelsource['Large hydro'].isna(),
+#                'Large hydro']  = fuelsource.loc[fuelsource['Large hydro'].isna(),'Large Hydro']
+# 
+# fuelsource.drop(columns= ['Natural Gas', 'Large Hydro'], inplace= True)
+# 
+# fuelsource.to_csv('fuelsource_2019_2025.csv', index = False)
+# 
+
+# In[35]:
+
+
+fuelsource = pd.read_csv('fuelsource_2019_2025.csv')
+netdemand = pd.read_csv('netdemand_2019_2025.csv')
+
+
+# # 2- Monthly and Daily Averages
+
+# In[36]:
 
 
 # Function to add ordinal suffix
@@ -58,23 +93,110 @@ def add_ordinal(n):
         suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
     return f"{n}{suffix}"
 
-# Extract month name and day with suffix
+# Extract additional time features
+def extract_time_features(df):
+    df['Date'] = pd.to_datetime(df['Date'])
+    df['Datetime'] = pd.to_datetime(df['Date'].astype(str) + ' ' + df['Time'], format='%Y-%m-%d %H:%M')
+    df['Year'] =df['Datetime'].dt.year
+    df['Month'] = df['Datetime'].dt.month
+    df['Hour'] = df['Datetime'].dt.hour
+    df['Time'] = df['Datetime'].dt.time
+    # Create new column with formatted date
+    df['Day'] = df['Datetime'].apply(lambda x: f"{x.strftime('%B')} {add_ordinal(x.day)}")
 
-# Create new column with formatted date
-netdemand['Day'] = netdemand['Datetime'].apply(lambda x: f"{x.strftime('%B')} {add_ordinal(x.day)}")
+
+# In[37]:
 
 
-#yearly_avg = netdemand.groupby(['Year', 'Time'])['Net demand'].mean().reset_index()
+extract_time_features(fuelsource)
+
+
+# In[38]:
+
+
+extract_time_features(netdemand)
+
+
+# In[39]:
+
+
+#Monthly Averages
 netdemand_yearly_monthly = netdemand.groupby(['Year','Month', 'Time'])['Net demand'].mean().reset_index()
 fuelsource_yearly_monthly = fuelsource.groupby(['Year','Month', 'Time'])[['Solar','Wind','Natural gas']].mean().reset_index()
 fuelsource_yearly_monthly['Solar_Wind'] = fuelsource_yearly_monthly['Solar'] + fuelsource_yearly_monthly['Wind']
 
 
+# # 3- Plots
+
+# In[40]:
+
+
+netdemand.tail(1)
+
+
+# In[64]:
+
+
+# Plot the April Changes
+#--- Plot 1: Value vs Time for a chosen Month, colored by Year ---
+
+fig1 = px.line(
+    netdemand[netdemand["Date"].isin([datetime(2025, 4, 6),datetime(2025, 4, 7),
+                                     datetime(2025, 4, 8),datetime(2025, 4, 9),
+                                     datetime(2025, 4, 10)])].copy(),
+    x="Time",
+    y="Net demand",
+    color="Day",
+    markers=False,
+    color_discrete_sequence=px.colors.sequential.algae,
+    title=f"Net Demand vs Time — April 4th 2025",
+)
+fig1.update_layout(xaxis_title="Time of Day", yaxis_title="MW", legend_title="Year")
+fig1.update_xaxes(type="category", tickangle=-70)
+
+st.plotly_chart(fig1)
+#fig1.show()
+
+
+# In[63]:
+
+
+# Plot Different sources compared to each other
+
+cols = ['Solar', 'Wind','Batteries', 'Small hydro', 'Large hydro','Geothermal', 'Biomass', 'Biogas',
+        'Coal', 'Nuclear', 'Natural gas' ,  'Imports', 'Other']
+
+# Aggregate by Year
+fuelsource_monthly = fuelsource[fuelsource.Date<datetime(2025, 11, 1)].groupby(['Year', 
+                                        'Month'])[cols].sum().reset_index().sort_values(['Year', 'Month'])
+
+
+# Build a proper Date column for the x-axis (first day of each month)
+fuelsource_monthly['Date'] = pd.to_datetime(dict(year=fuelsource_monthly['Year'], month=fuelsource_monthly['Month'], day=1))
+
+# Reshape for Plotly
+long_df = fuelsource_monthly.melt(id_vars='Date', value_vars=cols,
+                      var_name='Source', value_name='Generation')
+
+# Create stacked area chart
+fig2 = px.area(long_df, x='Date', y='Generation', color='Source', 
+              color_discrete_sequence=px.colors.qualitative.Light24,
+              title='Monthly Electricity Generation by Source',
+              labels={'Generation': 'MW', 'Year': 'Year'})
+
+st.plotly_chart(fig2)
+#fig.show()
+
+
+# In[45]:
+
 
 # --- Controls ---
 available_months = [m for m in netdemand_yearly_monthly["Month"].dropna().unique()]
 available_months = sorted([int(m) for m in available_months])
-month_names = {i: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][i-1] for i in range(1,13)}
+month_names = {i: ["January","February","March","April",
+                   "May","June","July","August","September",
+                   "October","November","December"][i-1] for i in range(1,13)}
 
 
 month_choice_num = st.selectbox(
@@ -84,12 +206,10 @@ month_choice_num = st.selectbox(
 )
 
 
-#--- Plot 1: Value vs Time for a chosen Month, colored by Year ---
-f1 = netdemand_yearly_monthly[netdemand_yearly_monthly["Month"] == month_choice_num].copy()
-f1 = f1.sort_values(["Time", "Year"])
+#--- Plot 2: Net-demand vs Time for a chosen Month, colored by Year ---
 
-fig1 = px.line(
-    f1,
+fig3 = px.line(
+    netdemand_yearly_monthly[netdemand_yearly_monthly["Month"] == month_choice_num].copy(),
     x="Time",
     y="Net demand",
     color="Year",
@@ -97,72 +217,9 @@ fig1 = px.line(
     color_discrete_sequence=px.colors.sequential.algae,
     title=f"Net Demand vs Time — {month_names[int(month_choice_num)]}",
 )
-fig1.update_layout(xaxis_title="Time of Day", yaxis_title="MW", legend_title="Year")
-fig1.update_xaxes(type="category", tickangle=-90)
+fig3.update_layout(xaxis_title="Time of Day", yaxis_title="MW", legend_title="Year")
+fig3.update_xaxes(type="category", tickangle=-70)
 
+st.plotly_chart(fig3)
 
-#st.subheader("Plot 1")
-st.plotly_chart(fig1, use_container_width=True)
-
-
-#--- Plot 1: Value vs Time for a chosen Month, colored by Year ---
-f2 = fuelsource_yearly_monthly[fuelsource_yearly_monthly["Month"] == month_choice_num].copy()
-f2 = f2.sort_values(["Time", "Year"])
-
-fig2 = px.line(
-    f2,
-    x="Time",
-    y="Solar_Wind",
-    color="Year",
-    markers=False,
-    color_discrete_sequence=px.colors.sequential.Burg,
-    title=f"Solar-Wind vs Time — {month_names[int(month_choice_num)]}",
-)
-
-# Extract the color assigned to each Year
-year_to_color = {}
-for trace in fig2.data:
-    if trace.name.isdigit():       # Year labels
-        year_to_color[int(trace.name)] = trace.line.color
-
-# --- Add Natural Gas (dashed lines, same color per Year) ---
-for year in f2["Year"].unique():
-    df_year = f2[f2["Year"] == year]
-
-    fig2.add_trace(
-        go.Scatter(
-            x=df_year["Time"],
-            y=df_year["Natural gas"],
-            mode="lines",
-            name=f"Natural gas — {year}",
-            line=dict(
-                color=year_to_color[year],   # same color as Solar_Wind
-                dash="dash"                  # dashed line style
-            ),
-        )
-    )
-    
-
-fig2.update_layout(xaxis_title="Time of Day", yaxis_title="MW", legend_title="Year")
-fig2.update_xaxes(type="category", tickangle=-90)
-
-
-#st.subheader("Plot 1")
-st.plotly_chart(fig2, use_container_width=True)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+#fig3.show()
