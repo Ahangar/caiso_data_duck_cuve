@@ -130,6 +130,8 @@ fuelsource_yearly_monthly['Solar_Wind'] = fuelsource_yearly_monthly['Solar'] + f
 
 # In[40]:
 
+st.markdown("# Net Load")
+st.markdown("With the growing penetration of solar photovoltaic (PV) power in many utility grid systems, operating conditions increasingly depend on controllable generation rather than raw demand. Traditional power plants - such as gas and coal - can adjust their output relatively quickly, but solar and wind resources cannot be turned on or off at will. This introduces new challenges for grid operators.")
 
 netdemand.tail(1)
 
@@ -224,6 +226,7 @@ fig3.update_xaxes(type="category", tickangle=-70)
 st.plotly_chart(fig3)
 
 #fig3.show()
+
 
 
 
