@@ -130,8 +130,17 @@ fuelsource_yearly_monthly['Solar_Wind'] = fuelsource_yearly_monthly['Solar'] + f
 
 # In[40]:
 
-st.markdown("# Net Load")
-st.markdown("With the growing penetration of solar photovoltaic (PV) power in many utility grid systems, operating conditions increasingly depend on controllable generation rather than raw demand. Traditional power plants - such as gas and coal - can adjust their output relatively quickly, but solar and wind resources cannot be turned on or off at will. This introduces new challenges for grid operators.")
+st.markdown("""
+<h1>What's with the&nbsp;Duck?!</h1>
+<h2>Duck Curve and Its&nbsp;Changes</h2>
+
+<h3>Why the Duck Curve?</h3>
+<p>As renewable energy sources, especially solar power, grows in many utility grid systems, operating conditions increasingly depend on controllable generation rather than raw demand. Traditional power plants - such as gas and coal - can adjust their output relatively quickly, but solar and wind resources cannot be turned on or off at will. This introduces new challenges for grid operators.</p>
+
+<p>Electricity demand typically ramps up in the morning as people go to work and businesses open. During midday, when solar generation is high, the system requires significantly less power from conventional sources. What matters most is the total demand minus the output from variable renewable resources (solar and wind), which is called the "Net Load". In other words, net load equals the forecasted demand minus expected generation from solar and wind.</p>
+
+<p>At night, while the demand and solar generation are both low, net load remains relatively stable. Starting the day, the demand increases and the Net Load increases too. In regions with high solar penetration - such as California - the net load dips sharply in the middle of the day due to abundant solar production. California Independent System Operator (CAISO) popularized the term "Duck Curve" because the midday dip makes the graph look like a duck [1].</p>
+""")
 
 netdemand.tail(1)
 
@@ -230,6 +239,7 @@ fig3.update_xaxes(type="category", tickangle=-70)
 st.plotly_chart(fig3)
 
 #fig3.show()
+
 
 
 
