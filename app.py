@@ -166,6 +166,8 @@ st.plotly_chart(fig1)
 
 # Plot Different sources compared to each other
 
+# Plot Different sources compared to each other
+
 cols = ['Solar', 'Wind','Batteries', 'Small hydro', 'Large hydro','Geothermal', 'Biomass', 'Biogas',
         'Coal', 'Nuclear', 'Natural gas' ,  'Imports', 'Other']
 
@@ -188,6 +190,8 @@ fig2 = px.area(long_df, x='Date', y='Generation', color='Source',
               labels={'Generation': 'MW', 'Year': 'Year'})
 
 st.plotly_chart(fig2)
+#fig2.show()
+
 #fig.show()
 
 
@@ -226,6 +230,7 @@ fig3.update_xaxes(type="category", tickangle=-70)
 st.plotly_chart(fig3)
 
 #fig3.show()
+
 
 
 
