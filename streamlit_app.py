@@ -221,6 +221,7 @@ In many places like California, solar and wind are the cheapest of power sources
 ---
 
 For better experience and full interactivity, check out this article as a Streamlit dashboard here: https://whats-with-the-duck.streamlit.app/
+
 Github code is available here: https://github.com/Ahangar/caiso_data_duck_cuve
 
 ---
@@ -233,6 +234,7 @@ Github code is available here: https://github.com/Ahangar/caiso_data_duck_cuve
 [5] U.S. Energy Information Administration. (2025, June 20). California: State energy profile analysis. Retrieved from https://www.eia.gov/state/analysis.php?sid=CA  
 [6] Plumer, B. (2025, March 17). A Trump overhaul of the Energy Dept. breaks up clean energy offices. The New York Times. Retrieved from https://www.nytimes.com/2025/03/17/climate/renewable-energy-trump-electricity.html  
 """, unsafe_allow_html=True)
+
 
 
 
