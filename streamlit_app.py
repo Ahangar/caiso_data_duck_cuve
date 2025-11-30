@@ -9,16 +9,14 @@ import streamlit as st
 import warnings
 warnings.filterwarnings("ignore")
 
+# # 1- Download Data----------------------------------
 
-# # 1- Download Data
-# Downloading Historical Data for Net Demand and Fuel Sources.
-
+# Downloading Historical Data for Net Demand and Fuel Sources
 #function to download CAISO data
 def download_caiso_data(start_date, end_date, target='netdemand'):
     #target options are: demand, netdemand, fuelsource
     
     dataframes = []
-
     current_date = start_date
     while current_date <= end_date:
         date_str = current_date.strftime('%Y%m%d')
@@ -38,9 +36,10 @@ def download_caiso_data(start_date, end_date, target='netdemand'):
         print("No data was loaded.")
         return pd.DataFrame()
 
-#-----Download the netdemand and fuelsource data:start- comment out if already downloaded
 start_date = datetime(2019, 1, 1) #start date for download
-end_date = datetime(2025, 11, 1)  #end date for download
+end_date = datetime(2025, 10, 31)  #end date for download
+
+#-----Download the netdemand and fuelsource data:start- comment out if already downloaded
 #netdemand = download_caiso_data(start_date, end_date, target='netdemand') #download netdemand
 #netdemand[['Time','Current demand','Net demand','Date']].to_csv('netdemand_2019_2025.csv', index = False) #save as csv
 #fuelsource = download_caiso_data(start_date, end_date, target='fuelsource') #download fuelsource
@@ -53,22 +52,13 @@ end_date = datetime(2025, 11, 1)  #end date for download
 #fuelsource.to_csv('fuelsource_2019_2025.csv', index = False) #save as csv
 #-----Download the netdemand and fuelsource data: end
 
-
 #Read downloaded files if available
 fuelsource = pd.read_csv('fuelsource_2019_2025.csv')
 netdemand = pd.read_csv('netdemand_2019_2025.csv')
 
-
-# # 2- Monthly and Daily Averages
+# # 2- Monthly and Daily Averages---------------------------
 
 # Function to add ordinal date
-def add_ordinal(n):
-    if 11 <= n % 100 <= 13:
-        suffix = 'th'
-    else:
-        suffix = {1: 'st', 2: 'nd', 3: 'rd'}.get(n % 10, 'th')
-    return f"{n}{suffix}"
-
 # Extract additional time features
 def extract_time_features(df):
     df['Date'] = pd.to_datetime(df['Date'])
@@ -77,8 +67,6 @@ def extract_time_features(df):
     df['Month'] = df['Datetime'].dt.month
     df['Hour'] = df['Datetime'].dt.hour
     df['Time'] = df['Datetime'].dt.time
-    # Create new column with formatted date
-    df['Day'] = df['Datetime'].apply(lambda x: f"{x.strftime('%B')} {add_ordinal(x.day)}")
 
 extract_time_features(fuelsource)
 extract_time_features(netdemand)
@@ -88,12 +76,11 @@ netdemand_yearly_monthly = netdemand.groupby(['Year','Month', 'Time'])['Net dema
 fuelsource_yearly_monthly = fuelsource.groupby(['Year','Month', 'Time'])[['Solar','Wind','Natural gas']].mean().reset_index()
 fuelsource['Solar_Wind'] = fuelsource['Solar'] + fuelsource['Wind']
 
-
-# # 3- Dashboard and Plots
+# # 3- Dashboard and Plots-------------------------------------------------------------------
 
 st.markdown("""
 # What's with the&nbsp;Duck?!
-## Duck Curve and Its&nbsp;Changes
+## How Solar Generation Reshaped the Net Load&nbsp;Curve
 """, unsafe_allow_html=True)
 
 st.markdown("""
@@ -234,3 +221,4 @@ In many places like California, solar and wind are the cheapest of power sources
 [5] U.S. Energy Information Administration. (2025, June 20). California: State energy profile analysis. Retrieved from https://www.eia.gov/state/analysis.php?sid=CA  
 [6] Plumer, B. (2025, March 17). A Trump overhaul of the Energy Dept. breaks up clean energy offices. The New York Times. Retrieved from https://www.nytimes.com/2025/03/17/climate/renewable-energy-trump-electricity.html  
 """, unsafe_allow_html=True)
+
