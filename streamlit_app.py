@@ -151,7 +151,7 @@ These challenges can be mitigated through accurate solar generation forecasting,
 
 ## Changes of the Duck Curve
 
-In 2024, solar energy (utility and smaller scale) supplied about 32% of California's total electricity net generation [5]. The plot below illustrates how electricity generation has evolved in California between 2019 and 2025. As the solar generation has been increasing, the natural gas and import portion of electricity sources have been decreases.
+In 2024, solar energy (utility and smaller scale) supplied about 32% of California's total electricity net generation [5]. In the plot below I show how electricity generation has evolved in California between 2019 and 2025. As the solar generation has been increasing, the natural gas and import portion of electricity sources have been decreasing.
 """, unsafe_allow_html=True)
 
 # Plot Different sources compared to each other
@@ -219,8 +219,7 @@ st.markdown("""
 In many places like California, solar and wind are the cheapest of power sources [6]. The growing solar penetration reshapes the grid and the net-load curve, with its impact increasing over time. The Duck Curve will keep deepening, with negative net loads becoming common. Ultimately, the deepening Duck Curve is a clear indicator of the energy transition ahead, where adaptability and innovation will define the success of a renewable-powered grid.
 
 ---
-
-For better experience and full interactivity, check out this article as a Streamlit dashboard here: https://whats-with-the-duck.streamlit.app/
+You can read my MEDIUM post here: https://medium.com/@Faraz_EA/whats-with-the-duck-cd7bbfbff97a
 
 Github code is available here: https://github.com/Ahangar/caiso_data_duck_cuve
 
@@ -234,6 +233,7 @@ Github code is available here: https://github.com/Ahangar/caiso_data_duck_cuve
 [5] U.S. Energy Information Administration. (2025, June 20). California: State energy profile analysis. Retrieved from https://www.eia.gov/state/analysis.php?sid=CA  
 [6] Plumer, B. (2025, March 17). A Trump overhaul of the Energy Dept. breaks up clean energy offices. The New York Times. Retrieved from https://www.nytimes.com/2025/03/17/climate/renewable-energy-trump-electricity.html  
 """, unsafe_allow_html=True)
+
 
 
 
