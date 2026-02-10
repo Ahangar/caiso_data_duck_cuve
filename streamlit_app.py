@@ -37,7 +37,7 @@ def download_caiso_data(start_date, end_date, target='netdemand'):
         return pd.DataFrame()
 
 start_date = datetime(2019, 1, 1) #start date for download
-end_date = datetime(2025, 12, 31)  #end date for download
+end_date = datetime(2025, 10, 31)  #end date for download
 
 #-----Download the netdemand and fuelsource data for California from CAISO:start- comment out if already downloaded
 #netdemand = download_caiso_data(start_date, end_date, target='netdemand') #download netdemand
@@ -100,7 +100,7 @@ At night, while the demand and solar generation are both low, net load remains r
 
 #--- Figure 1: Net Demand vs Time for a chosen day as well as solar+wind generation
 date_choice = st.date_input("Select a date",
-                    value=end_date,
+                    value = end_date,
                     min_value=start_date,
                     max_value= end_date)
 
