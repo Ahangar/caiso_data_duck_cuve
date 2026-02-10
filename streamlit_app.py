@@ -37,7 +37,7 @@ def download_caiso_data(start_date, end_date, target='netdemand'):
         return pd.DataFrame()
 
 start_date = datetime(2019, 1, 1) #start date for download
-end_date = datetime(2025, 10, 31)  #end date for download
+end_date = datetime(2026, 12, 30)  #end date for download
 
 #-----Download the netdemand and fuelsource data for California from CAISO:start- comment out if already downloaded
 #netdemand = download_caiso_data(start_date, end_date, target='netdemand') #download netdemand
