@@ -6,4 +6,5 @@ typing
 matplotlib
 streamlit
 pandas
+altair==4.2.2
 
